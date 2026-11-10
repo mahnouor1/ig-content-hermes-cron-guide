@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 8AM Cron Lead Engine</title>
+<meta name="description" content="One chat message sets it up. Every morning at 8 AM, fresh leads are already waiting in the CRM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-top:#1B1815;--bg-bottom:#0D0B0A;--ink:#F3EEE7;--muted:#A39A8F;--gold:#F2C46B;
+  --card:#221E1A;--card-2:#1F1B18;--bubble:#26221E;--line:rgba(255,255,255,0.08);
+}
+*{box-sizing:border-box;}
+html{background:var(--bg-bottom);}
+body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%) fixed;color:var(--ink);font-family:Inter,system-ui,sans-serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+a{color:var(--gold);text-decoration:none;}
+a:hover{color:var(--ink);}
+main{max-width:880px;margin:0 auto;padding:0 16px;}
+.page{display:flex;flex-direction:column;padding:72px 48px 48px;}
+.page + .page{border-top:1px solid var(--line);}
+.eyebrow{margin:0;font-size:13px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+h1{margin:0;font-size:60px;font-weight:800;line-height:1.04;letter-spacing:-0.035em;text-wrap:balance;}
+.gold{color:var(--gold);}
+p{margin:0;text-wrap:pretty;}
+.lede{font-size:20px;line-height:1.55;color:var(--muted);}
+header{display:flex;flex-direction:column;gap:18px;padding-bottom:48px;}
+.idea{display:flex;flex-direction:column;gap:20px;padding-top:40px;border-top:1px solid var(--line);}
+.bubble{max-width:560px;background:var(--bubble);border:1px solid var(--line);border-radius:26px 26px 26px 8px;padding:30px;}
+.bubble .q{font-size:64px;line-height:0.6;font-weight:800;color:var(--gold);height:26px;}
+.bubble p{font-size:30px;line-height:1.3;font-weight:700;letter-spacing:-0.02em;text-wrap:balance;}
+
+/* Diagram */
+.diagram{display:flex;flex-direction:column;background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:26px;padding:24px;}
+.row{display:flex;flex-direction:row;align-items:stretch;}
+.box{flex:1;display:flex;flex-direction:column;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;}
+.box.hl{border-color:rgba(242,196,107,0.35);}
+.box .t{font-weight:700;font-size:17px;}
+.box .s{font-size:14px;color:var(--muted);line-height:1.4;}
+.arrow{display:flex;align-items:center;justify-content:center;flex:none;width:32px;}
+.arrow.sm{width:22px;}
+.arrow svg{display:block;}
+.timer{display:flex;justify-content:center;align-self:flex-end;width:calc((100% - 64px) / 3);}
+.timer-inner{display:flex;flex-direction:column;align-items:center;padding:6px 0;}
+.stem{width:2px;background:var(--gold);}
+.pill{font-size:13px;font-weight:700;letter-spacing:0.08em;color:var(--bg-top);background:var(--gold);border-radius:999px;padding:5px 12px;}
+.engine{display:flex;flex-direction:column;gap:18px;border:1.5px solid rgba(243,238,231,0.22);border-radius:24px;padding:20px;}
+.engine .t{font-weight:800;font-size:20px;letter-spacing:-0.01em;}
+.engine .s{font-size:14px;color:var(--muted);}
+.step{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px;}
+.step .l{font-size:15px;font-weight:600;line-height:1.3;}
+.down{display:flex;justify-content:center;padding:6px 0;}
+.out{display:flex;flex-direction:row;align-items:center;gap:20px;}
+.crm{flex:1;display:flex;align-items:center;gap:14px;background:var(--gold);color:var(--bg-top);border-radius:22px;padding:20px 22px;}
+.crm .t{font-weight:800;font-size:20px;letter-spacing:-0.01em;}
+.crm .s{font-size:14px;font-weight:500;}
+.note{flex:0 0 180px;font-size:14px;color:var(--muted);font-style:italic;line-height:1.45;border-left:1px solid rgba(255,255,255,0.12);padding-left:16px;}
+
+/* Cards */
+.card{display:flex;flex-direction:column;gap:12px;background:var(--card-2);border:1px solid var(--line);border-radius:22px;padding:26px;}
+.icon{width:44px;height:44px;border-radius:14px;border:1px solid rgba(242,196,107,0.3);display:flex;align-items:center;justify-content:center;}
+.card .t{font-size:21px;font-weight:700;letter-spacing:-0.015em;line-height:1.3;}
+.card p{color:var(--muted);}
+footer{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-top:28px;margin-top:8px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);}
+.shift{display:flex;align-items:center;gap:8px;}
+
+@media (max-width:720px){
+  body{font-size:17px;}
+  .page{padding:48px 4px 36px;}
+  h1{font-size:40px;}
+  .lede{font-size:18px;}
+  .bubble{padding:24px;}
+  .bubble p{font-size:24px;}
+  .diagram{padding:16px;}
+  .row{flex-direction:column;}
+  .arrow{width:auto;height:30px;}
+  .arrow svg{transform:rotate(90deg);}
+  .timer{align-self:center;width:auto;}
+  .steps{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .steps .arrow{display:none;}
+  .out{flex-direction:column;align-items:stretch;gap:12px;}
+  .crm{flex:none;}
+  .note{flex:none;border-left:none;padding-left:0;text-align:center;}
+  footer{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+<main>
+
+<section class="page">
+  <header>
+    <div class="eyebrow">maha.automates</div>
+    <h1>The <span class="gold">8AM</span> Cron Lead Engine</h1>
+    <p class="lede">One chat message sets it up. Every morning at 8 AM, fresh leads are already waiting in my CRM, without me lifting a finger.</p>
+  </header>
+  <section class="idea">
+    <h2 class="eyebrow">The idea</h2>
+    <p>Most people use AI to answer questions. I used it to start work that <span class="gold">keeps running while I sleep</span>.</p>
+    <p>I tell my AI agent once:</p>
+    <div class="bubble">
+      <div class="q">“</div>
+      <p>Every morning at 8 AM, find me 20 new leads.<span class="gold"> ”</span></p>
+    </div>
+    <p>It turns that sentence into a <span class="gold">cron job</span>: a task that runs on its own, at the same time, every day. From then on, my lead engine finds businesses, collects their contact details, checks them, removes anyone I already have, and drops the fresh list into my CRM.</p>
+    <p>The AI only understands the request. <span class="gold">Everything after that is a system I built.</span></p>
+  </section>
+</section>
+
+<section class="page" style="gap:28px;">
+  <h2 class="eyebrow">How it fits together</h2>
+  <div class="diagram" role="img" aria-label="You send one sentence to the AI agent, which creates a cron job. Every day at 8 AM the lead engine finds businesses, collects contacts, verifies them and removes duplicates, then puts a fresh lead list in your CRM.">
+    <div class="row">
+      <div class="box"><div class="t">You, once</div><div class="s">one sentence</div></div>
+      <div class="arrow"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#A39A8F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h18M16 8l6 6-6 6"/></svg></div>
+      <div class="box"><div class="t">AI agent</div><div class="s">understands the request</div></div>
+      <div class="arrow"><svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="#A39A8F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h18M16 8l6 6-6 6"/></svg></div>
+      <div class="box hl"><div class="t">Cron job</div><div class="s">runs every day</div></div>
+    </div>
+    <div class="timer">
+      <div class="timer-inner">
+        <div class="stem" style="height:22px;"></div>
+        <div class="pill">8:00 AM</div>
+        <div class="stem" style="height:18px;"></div>
+        <svg width="16" height="10" viewBox="0 0 16 10" style="display:block;"><path d="M1 1l7 8 7-8" fill="none" stroke="#F2C46B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="engine">
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <div class="t">Lead engine</div>
+        <div class="s">runs on its own · fixed rules · no AI decisions</div>
+      </div>
+      <div class="row steps">
+        <div class="step">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3EEE7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+          <div class="l">Find businesses</div>
+        </div>
+        <div class="arrow sm"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#A39A8F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg></div>
+        <div class="step">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3EEE7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18v12H3zM8.5 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5.5 15.5c.5-1.4 1.7-2 3-2s2.5.6 3 2M14 10h4M14 13h3"/></svg>
+          <div class="l">Collect contacts</div>
+        </div>
+        <div class="arrow sm"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#A39A8F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg></div>
+        <div class="step">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3EEE7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5l2.4 1.8 3-.2.9 2.9 2.5 1.7-1 2.8 1 2.8-2.5 1.7-.9 2.9-3-.2L12 21.5l-2.4-1.8-3 .2-.9-2.9-2.5-1.7 1-2.8-1-2.8 2.5-1.7.9-2.9 3 .2zM8.5 12l2.5 2.5 4.5-5"/></svg>
+          <div class="l">Verify</div>
+        </div>
+        <div class="arrow sm"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#A39A8F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h12M11 5l4 4-4 4"/></svg></div>
+        <div class="step">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F3EEE7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>
+          <div class="l">Remove duplicates</div>
+        </div>
+      </div>
+    </div>
+    <div class="down"><svg width="28" height="44" viewBox="0 0 28 44" fill="none" stroke="#A39A8F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="display:block;"><path d="M14 4v34M8 32l6 6 6-6"/></svg></div>
+    <div class="out">
+      <div class="crm">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1B1815" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M4 7c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3zM4 7v10c0 1.7 3.6 3 8 3s8-1.3 8-3V7M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+        <div style="display:flex;flex-direction:column;"><div class="t">Your CRM</div><div class="s">fresh lead list</div></div>
+      </div>
+      <div class="note">Waiting before you open your laptop</div>
+    </div>
+  </div>
+  <p style="color:var(--muted);">I talk to the agent once. The schedule does the waking up, the engine does the work, and the CRM holds the result.</p>
+</section>
+
+<section class="page" style="gap:20px;">
+  <h2 class="eyebrow">Why it works</h2>
+  <div class="card">
+    <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2C46B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h11v8H8l-4 3zM14 13v1a2 2 0 0 0 2 2h3l2 2V10a2 2 0 0 0-2-2h-4"/></svg></div>
+    <div class="t">AI talks, code decides.</div>
+    <p>The agent only turns my words into a job. Who counts as a lead, what's a duplicate, and what's verified are fixed rules, so the results are the same every day.</p>
+  </div>
+  <div class="card">
+    <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2C46B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 11.2a.8.8 0 1 0 0 1.6.8.8 0 0 0 0-1.6z"/></svg></div>
+    <div class="t">The agent has one job.</div>
+    <p>It can schedule a search and report back. It can't send emails or touch anything else, so it can't go off script.</p>
+  </div>
+  <div class="card">
+    <div class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2C46B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 21c.8-3.8 3.9-6 7.5-6s6.7 2.2 7.5 6"/></svg></div>
+    <div class="t">A human stays in charge.</div>
+    <p>The system fills the CRM. Contacting anyone is always my call.</p>
+  </div>
+  <footer>
+    <div>@maha.automates</div>
+    <div class="shift">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#A39A8F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>
+      <span>night shift</span><span>→</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F2C46B" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <span class="gold" style="font-weight:600;">8:00 AM</span>
+    </div>
+  </footer>
+</section>
+
+</main>
+</body>
+</html>
